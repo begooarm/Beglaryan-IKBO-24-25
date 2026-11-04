@@ -1,11 +1,14 @@
 namespace practic1.models;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 public class SystemController {
     private readonly string username = Environment.UserName;
     private readonly string hostName = Environment.MachineName;
 
-    public string? vfsPath = "null";
-    public string? startScriptPath = "null";
+    public string? vfsPath;
+    public string? startScriptPath;
+    public string? configFilePath;
 
     public Dictionary<string, Func<string[], string>> commands;
 
@@ -16,7 +19,7 @@ public class SystemController {
             ["ls"] = ls,
             ["cd"] = cd,
             ["exit"] = exit,
-            ["setup"] = setUp
+            ["setup"] = setup
         };
     }
 
@@ -32,16 +35,22 @@ public class SystemController {
         return "";
     }
 
-    public string setUp(params string[] args)
+    public string setup(params string[] args)
     {
         if(args.Length == 0) { return "";  }
         
         for(int i = 0; i < args.Length; i++)
         {
-            if(args[i] == "--vfs") { vfsPath = args[i + 1]; }
-            if(args[i] == "--startScript") { startScriptPath = args[i + 1]; }
+            if(args[i] == "--vfsPath") { vfsPath = args[i+1]; }
+            if(args[i] == "--startScriptPath") { startScriptPath = args[i+1]; }
+            if(args[i] == "--configPath") { configFilePath = args[i+1]; }
         }
-        
-        return $"vfs path: {vfsPath}\nstart script path: {startScriptPath}";
+
+        if(configFilePath != null)
+        {
+            Validator.CheckIniConfig(configFilePath, ref vfsPath, ref startScriptPath);
+        }
+
+        return $"vfs path: {vfsPath}\nstart script path: {startScriptPath}\nconfig path: {configFilePath}";
     }
 }
