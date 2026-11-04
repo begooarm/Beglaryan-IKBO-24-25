@@ -28,9 +28,9 @@ public class CLIOperator {
     public string DoCommand(string inputLine)
     {
         string[] splitedInput = ReadInputLine(inputLine);
-        
-        if (systemController.commands.TryGetValue(splitedInput[0], out Func<string>? func))
-        { return func(); }
+
+        if (systemController.commands.TryGetValue(splitedInput[0], out Func<string[], string>? func))
+        { return func(splitedInput[1..]); }
 
         return "Unknow command";
     }
