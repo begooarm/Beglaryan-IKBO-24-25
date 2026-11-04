@@ -8,7 +8,7 @@ public class Pracric1
     public static void Main(string[] args)
     {
         CLIOperator cliOperator = new();
-        string? userInput, result, initialString;
+        string userInput, result, initialString;
 
         initialString = cliOperator.initialString;
 
