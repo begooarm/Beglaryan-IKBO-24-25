@@ -3,15 +3,11 @@ using System.Text.RegularExpressions;
 namespace practic1.models;
 
 public class CLIOperator {
-    public string initialString;
-    private SystemController systemController = new();
+    public SystemController systemController = new();
 
-    public CLIOperator()
-    {
-        initialString = $"{systemController.GetUsername()}@{systemController.GetHostname()}:~$ ";
-    }
+    public static string GetPrompt() { return $"{SystemController.GetUsername()}@{SystemController.GetHostname()}:~$ "; }
 
-    private string[] ReadInputLine(string inputLine)
+    private static string[] ReadInputLine(string inputLine)
     {
         string[] splitedInput = inputLine.Split(' ');
 
@@ -25,14 +21,19 @@ public class CLIOperator {
         return splitedInput;
     }
 
-    public string DoCommand(string? inputLine)
+    public void DoCommand(string? inputLine)
     {
-        if(inputLine == null) { return "Empty command"; }
+        if (inputLine == null) { Console.WriteLine("Empty command"); return; }
+
         string[] splitedInput = ReadInputLine(inputLine);
 
-        if (systemController.commands.TryGetValue(splitedInput[0], out Func<string[], string>? func))
-        { return func(splitedInput[1..]); }
+        if (systemController.commands.TryGetValue(splitedInput[0], out List<Action<string[]>>? functions))
+        {
+            foreach (Action<string[]> function in functions)
+                function(splitedInput[1..]);
+            return;
+        }
 
-        return "Unknow command";
+        Console.WriteLine("Unknown command");
     }
 }

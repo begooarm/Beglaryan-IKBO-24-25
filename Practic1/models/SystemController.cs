@@ -1,43 +1,38 @@
 namespace practic1.models;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 public class SystemController {
-    private readonly string username = Environment.UserName;
-    private readonly string hostName = Environment.MachineName;
-
     public string? vfsPath;
     public string? startScriptPath;
     public string? configFilePath;
 
-    public Dictionary<string, Func<string[], string>> commands;
+    public Dictionary<string, List<Action<string[]>>> commands;
 
     public SystemController()
     {
         commands = new()
         {
-            ["ls"] = ls,
-            ["cd"] = cd,
-            ["exit"] = exit,
-            ["setup"] = setup
+            ["ls"] = [ls],
+            ["cd"] = [cd],
+            ["exit"] = [exit],
+            ["setup"] = [setup, StartFile],
         };
     }
 
-    public string GetUsername() { return username; }
-    public string GetHostname() { return hostName; }
+    public static string GetUsername() { return Environment.UserName; }
+    public static string GetHostname() { return Environment.MachineName; }
 
-    public string ls(params string[] args) => "ls command";
-    public string cd(params string[] args) => "cd command";
+    public void ls(params string[] args) => Console.WriteLine("ls command");
+    public void cd(params string[] args) => Console.WriteLine("cd command");
 
-    public string exit(params string[] args)
+    public void exit(params string[] args)
     {
-        Environment.Exit(1);
-        return "";
+        Environment.Exit(0);
     }
 
-    public string setup(params string[] args)
+    public void setup(params string[] args)
     {
-        if(args.Length == 0) { return "";  }
+        if (args.Length == 0) return;
         
         for(int i = 0; i < args.Length; i++)
         {
@@ -47,10 +42,26 @@ public class SystemController {
         }
 
         if(configFilePath != null)
-        {
             Validator.CheckIniConfig(configFilePath, ref vfsPath, ref startScriptPath);
-        }
 
-        return $"vfs path: {vfsPath}\nstart script path: {startScriptPath}\nconfig path: {configFilePath}";
+        Console.WriteLine("All paths were successfully saved");
+
+        Console.WriteLine($"VFS path is: {vfsPath}");
+        Console.WriteLine($"Start sctipt path is: {startScriptPath}");
+        Console.WriteLine($"Config file path is: {configFilePath}");
+    }
+
+    public void StartFile(params string[] args)
+    {
+        if(startScriptPath != null)
+        {
+            Console.WriteLine("\nThe following lines contain commands stored in the startup script: ");
+            foreach(string line in File.ReadLines(startScriptPath))
+            {
+                Console.WriteLine($"{CLIOperator.GetPrompt()}" + line);
+                CLIOperator.DoCommand(line);
+                Console.WriteLine(".");
+            }
+        }
     }
 }
