@@ -2,24 +2,22 @@
 
 namespace practic1;
 
-
 public class Pracric1
 {
+
     public static void Main(string[] args)
     {
-        CLIOperator cliOperator = new();
-        string? userInput, result, initialString;
+        CLIOperator cLIOperator = new();
 
-        initialString = cliOperator.initialString;
+        string? userInput;
+        string initialString = CLIOperator.GetPrompt();
 
         while(true)
         {
             Console.Write(initialString);
             userInput = Console.ReadLine();
 
-            result = cliOperator.DoCommand(userInput);
-
-            Console.WriteLine(result);
+            cLIOperator.DoCommand(userInput);
             Console.WriteLine("----------------");
         }
     }
