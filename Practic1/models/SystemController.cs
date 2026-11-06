@@ -18,6 +18,7 @@ public class SystemController {
             ["cd"] = [cd],
             ["exit"] = [exit],
             ["setup"] = [setup, StartFile],
+            ["conf-dump"] = [ConfDump],
         };
     }
 
@@ -26,6 +27,16 @@ public class SystemController {
 
     public void ls(params string[] args) => Console.WriteLine("ls command");
     public void cd(params string[] args) => Console.WriteLine("cd command");
+
+    public void ConfDump(params string[] args)
+    {
+        Console.WriteLine("Emulators variables:");
+        Console.WriteLine($"userName={GetUsername()}");
+        Console.WriteLine($"hostname={GetHostname()}");
+        Console.WriteLine($"vfsPath={vfsPath}");
+        Console.WriteLine($"startScriptPath={startScriptPath}");
+        Console.WriteLine($"configPath={configFilePath}");
+    }
 
     public void exit(params string[] args)
     {

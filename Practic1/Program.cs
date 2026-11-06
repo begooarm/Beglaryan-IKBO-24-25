@@ -8,6 +8,12 @@ public class Pracric1
     {
         CLIOperator cLIOperator = new();
 
+        if (args.Length > 0)
+        {
+            cLIOperator.systemController.setup(args);
+            cLIOperator.systemController.StartFile();
+        }
+
         string? userInput;
         string initialString = CLIOperator.GetPrompt();
 
