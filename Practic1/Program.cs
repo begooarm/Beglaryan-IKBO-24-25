@@ -4,7 +4,6 @@ namespace practic1;
 
 public class Pracric1
 {
-
     public static void Main(string[] args)
     {
         CLIOperator cLIOperator = new();

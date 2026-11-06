@@ -6,6 +6,8 @@ public class SystemController {
     public string? startScriptPath;
     public string? configFilePath;
 
+    public Dictionary<string, string> config = [];
+
     public Dictionary<string, List<Action<string[]>>> commands;
 
     public SystemController()
@@ -55,11 +57,20 @@ public class SystemController {
     {
         if(startScriptPath != null)
         {
+            if(!File.Exists(startScriptPath))
+            {
+                Console.WriteLine("The file is not exist");
+                return;
+            }
+
+            CLIOperator dropCLIOperator = new();
             Console.WriteLine("\nThe following lines contain commands stored in the startup script: ");
+
+
             foreach(string line in File.ReadLines(startScriptPath))
             {
                 Console.WriteLine($"{CLIOperator.GetPrompt()}" + line);
-                CLIOperator.DoCommand(line);
+                dropCLIOperator.DoCommand(line);
                 Console.WriteLine(".");
             }
         }
