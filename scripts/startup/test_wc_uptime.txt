@@ -1,0 +1,17 @@
+uptime
+ls /
+wc /sample.txt
+wc /sample.txt /empty.txt /unicode.txt
+cd /nested
+wc child.txt
+wc /sample.txt
+cd /
+wc
+wc /missing.txt
+wc /nested
+wc /sample.txt/child.txt
+wc /missing.txt /sample.txt
+uptime extra
+wc /empty.txt
+uptime
+exit

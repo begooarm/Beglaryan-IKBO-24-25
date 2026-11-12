@@ -1,4 +1,4 @@
-﻿using practic1.models;
+﻿using practic1.models.CLIManagement;
 
 namespace practic1;
 
@@ -11,7 +11,7 @@ public class Pracric1
         if (args.Length > 0)
         {
             cLIOperator.systemController.setup(args);
-            cLIOperator.systemController.StartFile();
+            cLIOperator.StartFile();
         }
 
         string? userInput;

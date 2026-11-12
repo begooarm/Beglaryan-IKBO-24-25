@@ -1,3 +1,5 @@
+namespace practic1.models.CLIManagement;
+
 static class Validator
 {
     public static void Reassignment(ref Object legacyValue, Object maybeNewValue)

@@ -1,9 +1,17 @@
 using System.Text.RegularExpressions;
+using practic1.models.VFS;
 
-namespace practic1.models;
+namespace practic1.models.CLIManagement;
 
 public class CLIOperator {
-    public SystemController systemController = new();
+    public SystemController systemController;
+    public VFSManager vfsManager = new();
+
+    public CLIOperator()
+    {
+        systemController = new SystemController(vfsManager);
+        systemController.commands["setup"].Add(StartFile);
+    }
 
     public static string GetPrompt() { return $"{SystemController.GetUsername()}@{SystemController.GetHostname()}:~$ "; }
 
@@ -19,6 +27,27 @@ public class CLIOperator {
         }
 
         return splitedInput;
+    }
+
+    public void StartFile(params string[] args)
+    {
+        string? startScriptPath = systemController.startScriptPath;
+        if (startScriptPath == null) return;
+
+        if (!File.Exists(startScriptPath))
+        {
+            Console.WriteLine("The file is not exist");
+            return;
+        }
+
+        Console.WriteLine("\nThe following lines contain commands stored in the startup script: ");
+
+        foreach (string line in File.ReadLines(startScriptPath))
+        {
+            Console.WriteLine($"{GetPrompt()}{line}");
+            DoCommand(line);
+            Console.WriteLine(".");
+        }
     }
 
     public void DoCommand(string? inputLine)

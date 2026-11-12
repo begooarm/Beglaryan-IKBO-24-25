@@ -1,6 +1,8 @@
 using System.IO;
 using System.Collections.Generic;
 
+namespace practic1.models.CLIManagement;
+
 static class IniReader
 {
     public static Dictionary<string, string>? Read(string filePath)
