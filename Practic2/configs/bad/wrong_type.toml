@@ -1,0 +1,7 @@
+package_name = "A"
+repository = "tests/test_repo.txt"
+test_mode = "test"
+package_version = "1.0"
+output_file = "graph.svg"
+ascii_tree = true
+max_depth = "abc"
