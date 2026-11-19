@@ -17,5 +17,6 @@ public class Practic2
         executor.Step1(path);
         executor.Step2(suite, component, arch);
         executor.Step3(suite, component, arch);
+        executor.Step4();
     }
 }

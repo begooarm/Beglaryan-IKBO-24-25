@@ -46,4 +46,39 @@ public class DependencyGraphTraversal
         Dfs(root, 0);
         return result;
     }
+
+    public List<string> GetLoadOrder(string root, Func<string, List<string>?> getDependencies, int maxDepth, List<string> cycles)
+    {
+        var order = new List<string>();
+        var visited = new HashSet<string>();
+        var onPath = new List<string>();
+
+        void Dfs(string node, int depth)
+        {
+            visited.Add(node);
+            onPath.Add(node);
+
+            if (depth < maxDepth)
+            {
+                foreach (var dep in getDependencies(node) ?? [])
+                {
+                    int index = onPath.IndexOf(dep);
+                    if (index >= 0)
+                    {
+                        cycles.Add(string.Join(" -> ", onPath[index..].Append(dep)));
+                        continue;
+                    }
+
+                    if (!visited.Contains(dep))
+                        Dfs(dep, depth + 1);
+                }
+            }
+
+            onPath.RemoveAt(onPath.Count - 1);
+            order.Add(node);
+        }
+
+        Dfs(root, 0);
+        return order;
+    }
 }
