@@ -1,0 +1,8 @@
+# Этап 3: ромб и длинная цепочка, обрезка по max_depth = 2
+package_name = "A"
+repository = "tests/stage3/diamond_repo.txt"
+test_mode = "test"
+package_version = "1.0"
+output_file = "diamond.svg"
+ascii_tree = true
+max_depth = 2

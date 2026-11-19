@@ -39,6 +39,9 @@ public class Config
         if (Mode == "url" && !Location.StartsWith("http://") && !Location.StartsWith("https://"))
             errors.Add("location: для режима url нужен адрес, начинающийся с http:// или https://");
 
+        if (Mode == "test" && !PackageName.All(c => c >= 'A' && c <= 'Z'))
+            errors.Add($"package_name: в режиме test имя пакета должно состоять из больших латинских букв, получено '{PackageName}'");
+
         if (Mode == "test" && !File.Exists(Location))
             errors.Add($"location: файл тестового репозитория не найден: '{Location}'");
 
