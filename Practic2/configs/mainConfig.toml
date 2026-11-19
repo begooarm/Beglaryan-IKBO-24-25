@@ -1,0 +1,7 @@
+package_name = "curl"
+repository = "http://archive.ubuntu.com/ubuntu"
+test_mode = "url"
+package_version = "1.0"
+output_file = "graph.svg"
+ascii_tree = true
+max_depth = 3
