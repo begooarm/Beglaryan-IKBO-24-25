@@ -184,4 +184,33 @@ public class Executor
         for (int i = 0; i < order.Count; i++)
             Console.WriteLine($"  {i + 1}. {order[i]}");
     }
+
+    public void Step5()
+    {
+        if (_config == null || _resolver == null)
+            return;
+
+        Config config = _config;
+        var edges = _traversal.Traverse(config.PackageName, _resolver, config.MaxDepth);
+
+        var graph = new Dictionary<string, List<string>>();
+        foreach (var (from, to, _) in edges)
+        {
+            if (!graph.TryGetValue(from, out var deps))
+                graph[from] = deps = [];
+            deps.Add(to);
+        }
+
+        string dot = GraphVisualizer.ToDot(config.PackageName, edges);
+        Console.WriteLine($"\nГраф на языке Graphviz:\n{dot}");
+
+        GraphVisualizer.SaveSvg(dot, config.OutputFile);
+
+        if (config.AsciiTree)
+        {
+            Console.WriteLine($"\nДерево зависимостей {config.PackageName}:");
+            Console.WriteLine(config.PackageName);
+            GraphVisualizer.PrintAsciiTree(config.PackageName, graph, "", 0, config.MaxDepth, [config.PackageName]);
+        }
+    }
 }

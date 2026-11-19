@@ -1,0 +1,11 @@
+digraph deps {
+    "nano";
+    "nano" -> "libc6";
+    "libc6" -> "libgcc-s1";
+    "libc6" -> "libcrypt1";
+    "nano" -> "libncursesw6";
+    "libncursesw6" -> "libtinfo6";
+    "libncursesw6" -> "libc6";
+    "nano" -> "libtinfo6";
+    "libtinfo6" -> "libc6";
+}

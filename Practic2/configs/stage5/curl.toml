@@ -1,0 +1,8 @@
+# Этап 5: визуализация curl
+package_name = "curl"
+repository = "http://archive.ubuntu.com/ubuntu"
+test_mode = "url"
+package_version = "7.81.0-1"
+output_file = "results/curl.svg"
+ascii_tree = true
+max_depth = 2

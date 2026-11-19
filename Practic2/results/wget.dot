@@ -1,0 +1,22 @@
+digraph deps {
+    "wget";
+    "wget" -> "libc6";
+    "libc6" -> "libgcc-s1";
+    "libc6" -> "libcrypt1";
+    "wget" -> "libidn2-0";
+    "libidn2-0" -> "libc6";
+    "libidn2-0" -> "libunistring2";
+    "wget" -> "libpcre2-8-0";
+    "libpcre2-8-0" -> "libc6";
+    "wget" -> "libpsl5";
+    "libpsl5" -> "libidn2-0";
+    "libpsl5" -> "libc6";
+    "libpsl5" -> "libunistring2";
+    "wget" -> "libssl3";
+    "libssl3" -> "libc6";
+    "libssl3" -> "debconf";
+    "wget" -> "libuuid1";
+    "libuuid1" -> "libc6";
+    "wget" -> "zlib1g";
+    "zlib1g" -> "libc6";
+}

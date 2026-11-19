@@ -1,0 +1,8 @@
+# Этап 5: визуализация wget
+package_name = "wget"
+repository = "http://archive.ubuntu.com/ubuntu"
+test_mode = "url"
+package_version = "1.21.2-2ubuntu1"
+output_file = "results/wget.svg"
+ascii_tree = true
+max_depth = 2

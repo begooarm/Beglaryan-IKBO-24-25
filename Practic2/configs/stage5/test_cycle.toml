@@ -1,0 +1,8 @@
+# Этап 5: визуализация тестового графа с циклом
+package_name = "A"
+repository = "tests/stage3/cycle_repo.txt"
+test_mode = "test"
+package_version = "1.0"
+output_file = "results/test_cycle.svg"
+ascii_tree = true
+max_depth = 5

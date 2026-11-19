@@ -1,0 +1,8 @@
+# Этап 5: визуализация nano
+package_name = "nano"
+repository = "http://archive.ubuntu.com/ubuntu"
+test_mode = "url"
+package_version = "6.2-1"
+output_file = "results/nano.svg"
+ascii_tree = true
+max_depth = 2
