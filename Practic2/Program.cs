@@ -40,5 +40,34 @@ public class Practic2
         Console.WriteLine($"output_file = {config.OutputFile}");
         Console.WriteLine($"ascii_tree = {config.AsciiTree}");
         Console.WriteLine($"max_depth = {config.MaxDepth}");
+
+        // dotnet run -- <конфиг> [suite] [component] [arch]
+        string suite = args.Length > 1 ? args[1] : "jammy";
+        string component = args.Length > 2 ? args[2] : "main";
+        string arch = args.Length > 3 ? args[3] : "amd64";
+
+        List<string>? dependencies;
+        try
+        {
+            dependencies = AptDependencyFetcher.GetDirectDependencies(
+                config.Location, suite, component, arch, config.PackageName, config.PackageVersion);
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"\nНе удалось загрузить индекс из {config.Location} ({e.Message})");
+            return;
+        }
+
+        if (dependencies == null)
+        {
+            Console.WriteLine($"\nПакет {config.PackageName} {config.PackageVersion} не найден в индексе");
+            return;
+        }
+
+        Console.WriteLine($"\nПрямые зависимости {config.PackageName} {config.PackageVersion}:");
+        foreach (string name in dependencies)
+            Console.WriteLine($"  {name}");
+
+        Console.WriteLine("\nОграничение: версионные условия вида (>= 1.2) и альтернативы a | b (берётся первый вариант) не учитываются.");
     }
 }
