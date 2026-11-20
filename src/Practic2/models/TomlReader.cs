@@ -1,4 +1,4 @@
-namespace practic2.models;
+namespace Practic2.Models;
 
 public class TomlReader
 {
@@ -10,25 +10,25 @@ public class TomlReader
         {
             if(line == "") { continue; }
 
-            string[] splited_line = line.Split(" ");
-            char firstChar = splited_line[0][0];
+            string[] tokens = line.Split(" ");
+            char firstChar = tokens[0][0];
 
             if((firstChar != '#') && (firstChar != '['))
-                configData[splited_line[0]] = stringToType(splited_line[2])!;
+                configData[tokens[0]] = ParseValue(tokens[2])!;
         }
 
         return new Config(
-            getValue<string>(configData, "package_name"),
-            getValue<string>(configData, "repository"),
-            getValue<string>(configData, "test_mode"),
-            getValue<string>(configData, "package_version"),
-            getValue<string>(configData, "output_file"),
-            getValue<bool>(configData, "ascii_tree"),
-            getValue<int>(configData, "max_depth")
+            GetValue<string>(configData, "package_name"),
+            GetValue<string>(configData, "repository"),
+            GetValue<string>(configData, "test_mode"),
+            GetValue<string>(configData, "package_version"),
+            GetValue<string>(configData, "output_file"),
+            GetValue<bool>(configData, "ascii_tree"),
+            GetValue<int>(configData, "max_depth")
         );
     }
 
-    private static T getValue<T>(Dictionary<string, Object> data, string key)
+    private static T GetValue<T>(Dictionary<string, Object> data, string key)
     {
         if(!data.TryGetValue(key, out Object? value))
             throw new KeyNotFoundException($"Параметр '{key}' не найден в конфиге.");
@@ -40,7 +40,7 @@ public class TomlReader
         return typed;
     }
 
-    private static Object stringToType(string s)
+    private static Object ParseValue(string s)
     {
         if(s == "true") { return true; }
         if(s == "false") { return false; }

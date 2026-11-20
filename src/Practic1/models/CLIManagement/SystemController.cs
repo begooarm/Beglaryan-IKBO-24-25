@@ -1,8 +1,8 @@
-using practic1.models.VFS;
+using Practic1.Models.VFS;
 using System.Diagnostics;
 using System.Text;
 
-namespace practic1.models.CLIManagement;
+namespace Practic1.Models.CLIManagement;
 using System.Collections.Generic;
 
 public class SystemController {
@@ -23,13 +23,13 @@ public class SystemController {
 
         commands = new()
         {
-            ["ls"] = [ls],
-            ["cd"] = [cd],
-            ["wc"] = [wc],
-            ["rm"] = [rm],
-            ["uptime"] = [uptime],
-            ["exit"] = [exit],
-            ["setup"] = [setup],
+            ["ls"] = [Ls],
+            ["cd"] = [Cd],
+            ["wc"] = [Wc],
+            ["rm"] = [Rm],
+            ["uptime"] = [Uptime],
+            ["exit"] = [Exit],
+            ["setup"] = [Setup],
             ["conf-dump"] = [ConfDump],
         };
     }
@@ -37,7 +37,7 @@ public class SystemController {
     public static string GetUsername() { return Environment.UserName; }
     public static string GetHostname() { return Environment.MachineName; }
 
-    public void ls(params string[] args)
+    public void Ls(params string[] args)
     {
         if (args.Length == 0)
             vfsManager.DisplayDirectory(".");
@@ -45,7 +45,7 @@ public class SystemController {
             vfsManager.DisplayDirectory(args[0]);
     }
 
-    public void cd(params string[] args)
+    public void Cd(params string[] args)
     {
         if (args.Length == 0)
             vfsManager.currentFolder = vfsManager.GetFolder("/");
@@ -53,7 +53,7 @@ public class SystemController {
             vfsManager.currentFolder = vfsManager.GetFolder(args[0]);
     }
 
-    public void wc(params string[] args)
+    public void Wc(params string[] args)
     {
         if (args.Length == 0)
         {
@@ -62,59 +62,50 @@ public class SystemController {
         }
 
         foreach (string path in args)
-        {
-            VFSElement element;
-
-            try
-            {
-                element = vfsManager.GetElement(path);
-            }
-            catch (InvalidOperationException)
-            {
-                Console.WriteLine($"wc: {path}: no such file or directory");
-                continue;
-            }
-            catch (InvalidCastException)
-            {
-                Console.WriteLine($"wc: {path}: not a directory");
-                continue;
-            }
-
-            if (element is not MyFile file)
-            {
-                Console.WriteLine($"wc: {path}: is a directory");
-                continue;
-            }
-
-            string text = Encoding.UTF8.GetString(file.content);
-
-            int lines = 0;
-            int words = 0;
-
-            bool inWord = false;
-
-            foreach (char symbol in text)
-            {
-                if (symbol == '\n')
-                    lines++;
-
-                if (char.IsWhiteSpace(symbol))
-                    inWord = false;
-
-                else
-                {
-                    if (!inWord)
-                        words++;
-
-                    inWord = true;
-                }
-            }
-
-            Console.WriteLine($"{lines} {words} {file.content.Length} {path}");
-        }
+            PrintWordCount(path);
     }
 
-    public void rm(params string[] args)
+    private void PrintWordCount(string path)
+    {
+        VFSElement element;
+
+        try
+        {
+            element = vfsManager.GetElement(path);
+        }
+        catch (InvalidOperationException)
+        {
+            Console.WriteLine($"wc: {path}: no such file or directory");
+            return;
+        }
+        catch (InvalidCastException)
+        {
+            Console.WriteLine($"wc: {path}: not a directory");
+            return;
+        }
+
+        if (element is not MyFile file)
+        {
+            Console.WriteLine($"wc: {path}: is a directory");
+            return;
+        }
+
+        string text = Encoding.UTF8.GetString(file.content);
+        int lines = text.Count(symbol => symbol == '\n');
+        int words = 0;
+        bool inWord = false;
+        foreach (char symbol in text)
+        {
+            bool isWordCharacter = !char.IsWhiteSpace(symbol);
+            if (isWordCharacter && !inWord)
+                words++;
+            inWord = isWordCharacter;
+        }
+
+        Console.WriteLine($"{lines} {words} {file.content.Length} {path}");
+    }
+
+    public void Rm(params string[] args)
     {
         if (args.Length != 1)
         {
@@ -148,7 +139,7 @@ public class SystemController {
         vfsManager.allElements.Remove(element);
     }
 
-    public void uptime(params string[] args)
+    public void Uptime(params string[] args)
     {
         if (args.Length != 0)
         {
@@ -170,12 +161,12 @@ public class SystemController {
         Console.WriteLine($"configPath={configFilePath}");
     }
 
-    public void exit(params string[] args)
+    public void Exit(params string[] args)
     {
         Environment.Exit(0);
     }
 
-    public void setup(params string[] args)
+    public void Setup(params string[] args)
     {
         if (args.Length == 0) return;
         

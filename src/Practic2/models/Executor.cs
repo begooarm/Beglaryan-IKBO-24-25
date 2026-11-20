@@ -1,4 +1,4 @@
-namespace practic2.models;
+namespace Practic2.Models;
 
 public class Executor
 {
@@ -84,60 +84,67 @@ public class Executor
 
         Config config = _config;
 
-        if (config.Mode != "url")
+        bool testMode = config.Mode == "test";
+        _resolver = testMode
+            ? ReadTestRepository(config)
+            : ReadAptRepository(config, suite, component, arch);
+        if (_resolver == null)
+            return;
+
+        var edges = _traversal.Traverse(config.PackageName, _resolver, config.MaxDepth);
+        string package = testMode ? config.PackageName : $"{config.PackageName} {config.PackageVersion}";
+        if (edges.Count == 0)
         {
-            var graph = new Dictionary<string, List<string>>();
-            int lineNumber = 0;
-            foreach (string rawLine in File.ReadLines(config.Location))
-            {
-                lineNumber++;
-                string line = rawLine.Trim();
-                if (line == "" || line.StartsWith('#'))
-                    continue;
-
-                int colon = line.IndexOf(':');
-                if (colon < 0)
-                {
-                    Console.WriteLine($"\nОшибка в {config.Location}, строка {lineNumber}: нет ':' в '{line}'");
-                    return;
-                }
-
-                string name = line[..colon].Trim();
-                var deps = line[(colon + 1)..].Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
-
-                foreach (string package in deps.Prepend(name))
-                {
-                    if (package.Length == 0 || !package.All(c => c >= 'A' && c <= 'Z'))
-                    {
-                        Console.WriteLine($"\nОшибка в {config.Location}, строка {lineNumber}: имя пакета '{package}' должно состоять из больших латинских букв");
-                        return;
-                    }
-                }
-
-                graph[name] = deps;
-            }
-
-            if (!graph.ContainsKey(config.PackageName))
-            {
-                Console.WriteLine($"\nПакет {config.PackageName} не найден в тестовом репозитории {config.Location}");
-                return;
-            }
-
-            _resolver = name => graph.TryGetValue(name, out var deps) ? deps : null;
-            var testTraversal = _traversal.Traverse(config.PackageName, _resolver, config.MaxDepth);
-
-            if (testTraversal.Count == 0)
-            {
-                Console.WriteLine($"\nУ пакета {config.PackageName} нет зависимостей");
-                return;
-            }
-
-            Console.WriteLine($"\nГраф зависимостей {config.PackageName} из {config.Location} (глубина {config.MaxDepth}):");
-            foreach (var (from, to, depth) in testTraversal)
-                Console.WriteLine($"  {new string(' ', depth * 2)}{from} -> {to}");
+            Console.WriteLine($"\nУ пакета {package} нет зависимостей");
             return;
         }
 
+        string source = testMode ? $" из {config.Location}" : "";
+        Console.WriteLine($"\nГраф зависимостей {package}{source} (глубина {config.MaxDepth}):");
+        foreach (var (from, to, depth) in edges)
+            Console.WriteLine($"  {new string(' ', depth * 2)}{from} -> {to}");
+    }
+
+    private static Func<string, List<string>?>? ReadTestRepository(Config config)
+    {
+        var graph = new Dictionary<string, List<string>>();
+        int lineNumber = 0;
+        foreach (string rawLine in File.ReadLines(config.Location))
+        {
+            lineNumber++;
+            string line = rawLine.Trim();
+            if (line == "" || line.StartsWith('#'))
+                continue;
+
+            int colon = line.IndexOf(':');
+            if (colon < 0)
+            {
+                Console.WriteLine($"\nОшибка в {config.Location}, строка {lineNumber}: нет ':' в '{line}'");
+                return null;
+            }
+
+            string name = line[..colon].Trim();
+            var deps = line[(colon + 1)..].Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+            string? invalid = deps.Prepend(name).FirstOrDefault(package => !Config.IsTestPackageName(package));
+            if (invalid != null)
+            {
+                Console.WriteLine($"\nОшибка в {config.Location}, строка {lineNumber}: " +
+                    $"имя пакета '{invalid}' должно состоять из больших латинских букв");
+                return null;
+            }
+            graph[name] = deps;
+        }
+
+        if (graph.ContainsKey(config.PackageName))
+            return name => graph.GetValueOrDefault(name);
+
+        Console.WriteLine($"\nПакет {config.PackageName} не найден в тестовом репозитории {config.Location}");
+        return null;
+    }
+
+    private static Func<string, List<string>?>? ReadAptRepository(
+        Config config, string suite, string component, string arch)
+    {
         List<AptPackage> index;
         try
         {
@@ -146,27 +153,17 @@ public class Executor
         catch (Exception e) when (e is HttpRequestException or TaskCanceledException)
         {
             Console.WriteLine($"\nНе удалось загрузить индекс из {config.Location} ({e.Message})");
-            return;
+            return null;
         }
 
         var resolver = AptDependencyFetcher.CreateDependencyResolver(index, config.PackageName, config.PackageVersion);
         if (resolver == null)
         {
             Console.WriteLine($"\nПакет {config.PackageName} {config.PackageVersion} не найден в индексе");
-            return;
+            return null;
         }
 
-        _resolver = resolver;
-        var traversal = _traversal.Traverse(config.PackageName, resolver, config.MaxDepth);
-        if (traversal.Count == 0)
-        {
-            Console.WriteLine($"\nУ пакета {config.PackageName} {config.PackageVersion} нет зависимостей");
-            return;
-        }
-
-        Console.WriteLine($"\nГраф зависимостей {config.PackageName} {config.PackageVersion} (глубина {config.MaxDepth}):");
-        foreach (var (from, to, depth) in traversal)
-            Console.WriteLine($"  {new string(' ', depth * 2)}{from} -> {to}");
+        return resolver;
     }
 
     public void Step4()

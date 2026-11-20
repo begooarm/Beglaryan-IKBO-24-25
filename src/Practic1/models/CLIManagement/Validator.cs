@@ -1,4 +1,4 @@
-namespace practic1.models.CLIManagement;
+namespace Practic1.Models.CLIManagement;
 
 static class Validator
 {

@@ -1,4 +1,4 @@
-namespace practic1.models.VFS;
+namespace Practic1.Models.VFS;
 
 public class VFSManager
 {

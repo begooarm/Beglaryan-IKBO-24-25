@@ -1,17 +1,17 @@
-﻿using practic1.models.CLIManagement;
+using Practic1.Models.CLIManagement;
 
-namespace practic1;
+namespace Practic1;
 
-public class Pracric1
+public class Program
 {
     public static void Main(string[] args)
     {
-        CLIOperator cLIOperator = new();
+        CLIOperator cliOperator = new();
 
         if (args.Length > 0)
         {
-            cLIOperator.systemController.setup(args);
-            cLIOperator.StartFile();
+            cliOperator.systemController.Setup(args);
+            cliOperator.StartFile();
         }
 
         string? userInput;
@@ -22,7 +22,7 @@ public class Pracric1
             Console.Write(initialString);
             userInput = Console.ReadLine();
 
-            cLIOperator.DoCommand(userInput);
+            cliOperator.DoCommand(userInput);
             Console.WriteLine("----------------");
         }
     }

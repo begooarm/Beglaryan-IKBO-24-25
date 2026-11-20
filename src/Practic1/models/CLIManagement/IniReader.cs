@@ -1,10 +1,11 @@
 using System.IO;
 using System.Collections.Generic;
 
-namespace practic1.models.CLIManagement;
+namespace Practic1.Models.CLIManagement;
 
 static class IniReader
 {
+    /// <summary>Reads settings written as key = value from an INI file.</summary>
     public static Dictionary<string, string>? Read(string filePath)
     {
         if(!File.Exists(filePath)) { return null; }
@@ -15,7 +16,6 @@ static class IniReader
         {
             if(line[0] == '[' || line[0] == ';') { continue; }
 
-            // line form in ini is "something = something_else"
             string[] lineSplit = line.Split(' ');
             config[lineSplit[0]] = lineSplit[2];
         }

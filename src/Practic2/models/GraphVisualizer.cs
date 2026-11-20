@@ -1,4 +1,4 @@
-namespace practic2.models;
+namespace Practic2.Models;
 
 public static class GraphVisualizer
 {

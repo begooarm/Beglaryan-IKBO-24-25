@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
-using practic1.models.VFS;
+using Practic1.Models.VFS;
 
-namespace practic1.models.CLIManagement;
+namespace Practic1.Models.CLIManagement;
 
 public class CLIOperator {
     public SystemController systemController;
@@ -13,20 +13,22 @@ public class CLIOperator {
         systemController.commands["setup"].Add(StartFile);
     }
 
-    public static string GetPrompt() { return $"{SystemController.GetUsername()}@{SystemController.GetHostname()}:~$ "; }
+    public static string GetPrompt() =>
+        $"{SystemController.GetUsername()}@{SystemController.GetHostname()}:~$ ";
 
     private static string[] ReadInputLine(string inputLine)
     {
-        string[] splitedInput = inputLine.Split(' ');
+        string[] tokens = inputLine.Split(' ');
 
-        for (int i = 0; i < splitedInput.Length; i++)
+        for (int i = 0; i < tokens.Length; i++)
         {
-            splitedInput[i] = Regex.Replace(splitedInput[i], @"\$(?:\{([a-zA-Z_][a-zA-Z0-9_]*)\}|([a-zA-Z_][a-zA-Z0-9_]*))",
+            tokens[i] = Regex.Replace(tokens[i],
+                @"\$(?:\{([a-zA-Z_][a-zA-Z0-9_]*)\}|([a-zA-Z_][a-zA-Z0-9_]*))",
                 match => Environment.GetEnvironmentVariable(
                     match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value) ?? "");
         }
 
-        return splitedInput;
+        return tokens;
     }
 
     public void StartFile(params string[] args)
@@ -54,12 +56,12 @@ public class CLIOperator {
     {
         if (inputLine == null) { Console.WriteLine("Empty command"); return; }
 
-        string[] splitedInput = ReadInputLine(inputLine);
+        string[] tokens = ReadInputLine(inputLine);
 
-        if (systemController.commands.TryGetValue(splitedInput[0], out List<Action<string[]>>? functions))
+        if (systemController.commands.TryGetValue(tokens[0], out List<Action<string[]>>? functions))
         {
             foreach (Action<string[]> function in functions)
-                function(splitedInput[1..]);
+                function(tokens[1..]);
             return;
         }
 

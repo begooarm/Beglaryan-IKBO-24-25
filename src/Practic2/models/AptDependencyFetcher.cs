@@ -1,8 +1,11 @@
-namespace practic2.models;
+using System.IO.Compression;
+
+namespace Practic2.Models;
 
 public static class AptDependencyFetcher
 {
-    public static List<string>? GetDirectDependencies(string repository, string suite, string component, string arch, string name, string version)
+    public static List<string>? GetDirectDependencies(
+        string repository, string suite, string component, string arch, string name, string version)
     {
         string indexUrl = $"{repository.TrimEnd('/')}/dists/{suite}/{component}/binary-{arch}/Packages.gz";
 
@@ -22,7 +25,7 @@ public static class AptDependencyFetcher
 
         using var http = new HttpClient();
         using var stream = http.GetStreamAsync(indexUrl).GetAwaiter().GetResult();
-        using var gz = new System.IO.Compression.GZipStream(stream, System.IO.Compression.CompressionMode.Decompress);
+        using var gz = new GZipStream(stream, CompressionMode.Decompress);
         using var reader = new StreamReader(gz);
 
         var packages = new List<AptPackage>();
@@ -47,7 +50,8 @@ public static class AptDependencyFetcher
         return packages;
     }
 
-    public static Func<string, List<string>?>? CreateDependencyResolver(List<AptPackage> index, string rootName, string rootVersion)
+    public static Func<string, List<string>?>? CreateDependencyResolver(
+        List<AptPackage> index, string rootName, string rootVersion)
     {
         var root = index.FirstOrDefault(p => p.Name == rootName && p.Version == rootVersion);
         if (root == null)
@@ -65,7 +69,7 @@ public static class AptDependencyFetcher
 
     private static AptPackage? FindPackage(Stream compressed, string name, string version)
     {
-        using var gz = new System.IO.Compression.GZipStream(compressed, System.IO.Compression.CompressionMode.Decompress);
+        using var gz = new GZipStream(compressed, CompressionMode.Decompress);
         using var reader = new StreamReader(gz);
 
         string? packageName = null, packageVersion = null, depends = null;
